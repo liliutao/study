@@ -1,12 +1,13 @@
 <!--  -->
 <template>
-<footer class='footer'>
+  <div class="footer">
     <ul>
-        <router-link tag="li" to='/index'>首页</router-link>
-        <router-link tag="li" to='/cart'>购物车</router-link>
-        <router-link tag="li" to='/mine'>我的</router-link>
+      <!-- <li>111</li> -->
+      <router-link tag="li" to="/index">首页</router-link>
+      <router-link tag="li" to="/showcat">购物车</router-link>
+      <router-link tag="li" to="/mine">我的</router-link>
     </ul>
-</footer>
+  </div>
 </template>
 
 <script>
@@ -14,63 +15,55 @@
 //例如：import 《组件名称》 from '《组件路径》';
 
 export default {
-//import引入的组件需要注入到对象中才能使用
-components: {},
-data() {
-//这里存放数据
-return {
-
+  //import引入的组件需要注入到对象中才能使用
+  components: {},
+  data() {
+    //这里存放数据
+    return {};
+  },
+  //监听属性 类似于data概念
+  computed: {},
+  //监控data中的数据变化
+  watch: {},
+  //方法集合
+  methods: {},
+  //生命周期 - 创建完成（可以访问当前this实例）
+  created() {},
+  //生命周期 - 挂载完成（可以访问DOM元素）
+  mounted() {},
+  beforeCreate() {}, //生命周期 - 创建之前
+  beforeMount() {}, //生命周期 - 挂载之前
+  beforeUpdate() {}, //生命周期 - 更新之前
+  updated() {}, //生命周期 - 更新之后
+  beforeDestroy() {}, //生命周期 - 销毁之前
+  destroyed() {}, //生命周期 - 销毁完成
+  activated() {}, //如果页面有keep-alive缓存功能，这个函数会触发
 };
-},
-//监听属性 类似于data概念
-computed: {},
-//监控data中的数据变化
-watch: {},
-//方法集合
-methods: {
-
-},
-//生命周期 - 创建完成（可以访问当前this实例）
-created() {
-
-},
-//生命周期 - 挂载完成（可以访问DOM元素）
-mounted() {
-
-},
-beforeCreate() {}, //生命周期 - 创建之前
-beforeMount() {}, //生命周期 - 挂载之前
-beforeUpdate() {}, //生命周期 - 更新之前
-updated() {}, //生命周期 - 更新之后
-beforeDestroy() {}, //生命周期 - 销毁之前
-destroyed() {}, //生命周期 - 销毁完成
-activated() {}, //如果页面有keep-alive缓存功能，这个函数会触发
-}
 </script>
-<style lang='scss' scoped>
-//@import url(); 引入公共css类
-   .footer {
-     background-color: #fff;
+<style scoped>
+.footer {
   width: 100%;
-  height: 40px;
+  height: 60px;
   position: fixed;
-  left: 0;
   bottom: 0;
-  ul {
-    list-style: none;
-    height: 40px;
-    display: flex;
-    li {
-       flex: 1;
-      height: 40px;
-      float: left;
-      text-align: center;
-      line-height: 40px;
-      &.active{
-        background: red;
-        color: #fff;
-      }
-    }
-  } 
+  left: 0;
+  border-top: 1px solid #cecece;
+  z-index: 100;
 }
+ul {
+  height: 60px;
+}
+li {
+  width: 33.33%;
+  height: 60px;
+  float: left;
+  background: white;
+  line-height: 60px;
+  text-align: center;
+}
+.active {
+        background-color: #000000;
+        color: white;
+        font-weight: 500;
+    }
 </style>

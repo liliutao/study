@@ -1,142 +1,278 @@
-<!--  -->
 <template>
-<div class='wrap'>
-    <div class="nav">
-        
+  <div id="main">
+    <div id="content">
+      <div class="nav">
+        <ul>
+          <li
+            @click="changeLi($event, '5f72d50e2bfe2f07cccefd1e')"
+            ref="navall"
+          >
+            全部
+          </li>
+          <li
+            v-for="item in typeList"
+            :key="item._id"
+            ref="navli"
+            @click="changeLi($event, item._id)"
+          >
+            {{ item.kind }}
+          </li>
+        </ul>
       </div>
-    <ul>
-        <li v-for="item in GoodsInfo" :key="item._id">
-            <div class="tu"  :key='url'>
-                <img  :src="item.imgUrl" alt="">
-            </div>
-            <div class="right">
-                <div class="text">
-                    <h3>{{item.name}}</h3>
-                    <p>{{item.title}}</p>
-                    <i>￥<span>{{item.price}}</span></i>
+      <transition>
+        <div class="proList">
+          <ul>
+            <li
+              v-for="(item, index) in proList"
+              :key="item._id"
+              @click="goDetail(item._id)"
+            >
+              <div class="left">
+                <img :src="item.imgUrl" />
+              </div>
+              <div class="right">
+                <h3>{{ item.titile }}</h3>
+                <p>{{ item.name }}</p>
+                <i>￥</i><span>{{ item.price }}</span>
+                <div class="btn1" @click="changeFlag(index)" ref="btn1"></div>
+                <div class="btn2" ref="btn2">
+                  <div class="minus" @click="doMinus(index)">-</div>
+                  <div class="num">{{ num }}</div>
+                  <div class="plus" @click="doPlus">+</div>
                 </div>
-                <div class="shopbtn">加入购物车</div>
-            </div>
-        </li>
-      
-</ul>
-</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </transition>
+    </div>
+  </div>
 </template>
 
 <script>
-//这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
-//例如：import 《组件名称》 from '《组件路径》';
-import axios from 'axios'
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 export default {
-//import引入的组件需要注入到对象中才能使用
-components: {},
-data() {
-return {
-    GoodsInfo:[],
-    // imgUrl:[]
+  name: "",
+  props: {},
+  components: {
+    Header,
+    Footer,
+  },
 
+  data() {
+    return {
+      curIndex: "",
+      num: 0,
+      typeList: [],
+      proList: [],
+    };
+  },
+  methods: {
+    getType() {
+      this.$http.get("/fruit/getkind").then((res) => {
+        this.typeList = res.data.Kindlist;
+      });
+    },
+    changeFlag(index) {
+      for (let i = 0; i < this.$refs.btn1.length; i++) {
+        this.$refs.btn1[i].style.display = "block";
+      }
+      for (let i = 0; i < this.$refs.btn2.length; i++) {
+        this.$refs.btn2[i].style.display = "none";
+      }
+      this.$refs.btn1[index].style.display = "none";
+      this.$refs.btn2[index].style.display = "block";
+    },
+    doMinus(index) {
+      if (this.num > 0) {
+        this.num--;
+      } else {
+        this.$refs.btn1[index].style.display = "block";
+        this.$refs.btn2[index].style.display = "none";
+      }
+    },
+    doPlus() {
+      this.num++;
+    },
+    changeLi(e, id) {
+      for (let i = 0; i < this.$refs.navli.length; i++) {
+        this.$refs.navli[i].className = "";
+      }
+      this.$refs.navall.className = "";
+      e.target.className = "active";
+      const typeId = id;
+      this.getProducts(typeId);
+    },
+    getProducts(typeid) {
+      if (typeid == "5f72d50e2bfe2f07cccefd1e") {
+        this.$http.get("/main/all").then((res) => {
+          this.proList = res.data.list;
+        });
+      } else {
+        const newList = [];
+        this.$http.get("/main/all").then((res) => {
+          this.proList = res.data.list;
+          for (let i = 0; i < this.proList.length; i++) {
+            if (typeid == this.proList[i].kind._id) {
+              newList.push(this.proList[i]);
+            }
+          }
+          this.proList = newList;
+        });
+      }
+    },
+    goDetail(proid) {
+      this.$router.push({
+        path: "/detail",
+        query: {
+          id: proid,
+        },
+      });
+    },
+  },
+  created() {
+    this.getType();
+    this.getProducts("5f72d50e2bfe2f07cccefd1e");
+  },
+  mounted() {
+    this.$refs.navall.className = "active";
+  },
+  watch: {},
+  computed: {},
+  filters: {},
 };
-},
-//监听属性 类似于data概念
-computed: {},
-//监控data中的数据变化
-watch: {},
-//方法集合
-methods: {
-    getGoodsInfo(){
-        axios.get('http://192.168.15.16:5000/main/all').then(mon=>{
-            console.log(mon.data.list)
-            this.GoodsInfo=mon.data.list
-            for (let i = 0; i < mon.data.list.length; i++) {
-                   mon.data.list[i].imgUrl='http://192.168.15.16:5000/'+mon.data.list[i].imgUrl
-            }
-    
-         
-               
-        })
-    }
-},
-//生命周期 - 创建完成（可以访问当前this实例）
-created() {
-    this.getGoodsInfo()
-},
-//生命周期 - 挂载完成（可以访问DOM元素）
-mounted() {
-
-},
-beforeCreate() {}, //生命周期 - 创建之前
-beforeMount() {}, //生命周期 - 挂载之前
-beforeUpdate() {}, //生命周期 - 更新之前
-updated() {}, //生命周期 - 更新之后
-beforeDestroy() {}, //生命周期 - 销毁之前
-destroyed() {}, //生命周期 - 销毁完成
-activated() {}, //如果页面有keep-alive缓存功能，这个函数会触发
-}
 </script>
-<style lang='scss' scoped>
-.wrap{
-       margin-top: 80px;
-       margin-bottom: 40px;
-        .nav{
-            width: 100%;
-            height: 40px;
-            background-color:#000;
-        }     
-        ul{
-            li{
-                height: 130px;
-                width: 100%;
-                border-bottom: 1px solid #cecece;
-                display:flex;
-                .tu{
-                    height: 100%;
-                    flex:3;
-                    img{
-                        width: 104px;
-                        height: 104px;
-                       margin-left: 20px;
-                       margin-top: 10px;
-                    }
-                }
-                .right{
-                    display: flex;
-                    flex:7;
-                    padding-left: 10px;
-                    .text{
-                        margin-top: 25px;
-                        margin-left: 20px;
-                        flex: 4;
-                        h3{
-                            font-weight: 600;
-                            margin-bottom: 15px;
-                        }
-                        p{
-                            font-size: 10px;
-                            margin-bottom: 15px;
-                        }
-                        i{
-                            span{
-                                color: #ff65ff;
-                                font-size: 20px;
-                                font-weight: 600px;
-                            }
-                        }
-                    }
-                    .shopbtn{
-                        flex: 3;
-                        
-                        width: 100px;
-                        height: 30px;
-                        background: orange;
-                        border-radius: 50px;
-                        color: #ffffff;
-                        text-align: center;
-                        line-height: 30px;
-                        margin-top: 85px;
-                    }
-                }
-            }
-        }
-    }
 
+<style scoped>
+.v-enter,
+.v-leave-to {
+  opacity: 0;
+  transform: translateX(150px);
+}
+.v-enter-active,
+.v-leave-active {
+  transition: all 0.8s ease;
+}
+#content {
+  /* height: calc(100% - 110px); */
+  margin: 50px 0px 60px 0px;
+  overflow-y: auto;
+}
+/* 导航栏 */
+.nav {
+  position: relative;
+  left: 0;
+  top: 0;
+  z-index: 1;
+}
+.nav ul {
+  background-color: #f6f7fb;
+  width: 100%;
+  justify-content: space-between;
+  position: fixed;
+  display: flex;
+  overflow-x: auto;
+  height: 45px;
+}
+.nav ul li {
+  width: 80px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav .active {
+  background-color: #fffffd;
+  box-shadow: 3px 3px #efeef3;
+  color: #6a9cd1;
+}
+
+/* 商品列表框 */
+.proList {
+  position: relative;
+  margin-top: 50px;
+  /* z-index: -50; */
+}
+.proList ul li {
+  border-bottom: #f0f0f0 solid 2px;
+  display: flex;
+}
+.left {
+  width: 40%;
+  height: 110px;
+}
+.left img {
+  width: 100%;
+  height: 100%;
+}
+.right {
+  flex: 1;
+  position: relative;
+  width: 60%;
+  text-align: left;
+  padding-left: 10px;
+}
+.right h3 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+.right p {
+  margin-bottom: 12px;
+}
+.right span {
+  font-size: 20px;
+  color: #ff5da4;
+}
+.right .btn1 {
+  position: absolute;
+  bottom: 8px;
+  right: 15px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #ff67b0;
+  display: block;
+}
+.right .btn2 {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: absolute;
+  bottom: 8px;
+  right: 5px;
+  width: 65px;
+  height: 20px;
+  display: none;
+}
+.right .minus {
+  font-size: 12px;
+  text-align: center;
+  float: left;
+  width: 15px;
+  height: 15px;
+  line-height: 15px;
+  border-radius: 50%;
+  border: #ff67b0 solid 1px;
+  color: #ff67b0;
+}
+.right .num {
+  margin-left: 10px;
+  margin-right: 10px;
+  float: left;
+  height: 15px;
+}
+.right .plus {
+  float: left;
+  font-size: 12px;
+  text-align: center;
+  width: 17px;
+  height: 17px;
+  line-height: 17px;
+  border-radius: 50%;
+  background-color: #ff67b0;
+  color: #fff;
+}
 </style>

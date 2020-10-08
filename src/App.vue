@@ -1,21 +1,25 @@
 <template>
   <div id="app">
+    <Header v-show="$route.meta.showHeader"></Header>
     <router-view></router-view>
-    <Footer></Footer>
+    <Footer v-show="$route.meta.showFooter"></Footer>
   </div>
 </template>
 
 <script>
-import Footer from './components/Footer'
-
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    Footer
-  }
-}
+    Header,
+    Footer,
+  },
+};
 </script>
 
-<style>
-
+<style lang="scss" >
+#app {
+  height: 100%;
+}
 </style>
